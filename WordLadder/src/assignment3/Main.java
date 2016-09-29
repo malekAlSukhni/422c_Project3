@@ -20,7 +20,8 @@ public class Main {
 
 	// static variables and constants only here.
 	static ArrayList<String> input;
-	
+	static String start;
+	static String end;
 
 	public static void main(String[] args) throws Exception {
 
@@ -37,7 +38,12 @@ public class Main {
 			ps = System.out; // default to Stdout
 		}
 
-		//initialize();
+		ArrayList<String> boom = parse(kb);
+		printLadder(getWordLadderBFS(boom.get(0), boom.get(1)));
+		System.out.println("DFS");
+		printLadder(getWordLadderDFS(boom.get(0), boom.get(1)));
+		boom = parse(kb);
+		printLadder(getWordLadderBFS(boom.get(0), boom.get(1)));
 	}
 
 	public static void initialize() {
@@ -52,47 +58,71 @@ public class Main {
 	 * @return ArrayList of 2 Strings containing start word and end word. If
 	 *         command is /quit, return empty ArrayList.
 	 */
-	public static ArrayList<String> parse(Scanner keyboard) {		
+	public static ArrayList<String> parse(Scanner keyboard) {
 		ArrayList<String> parsedWords = new ArrayList<String>(2);
 		System.out.println("enter 2 words sep by space");
-		parsedWords.add(keyboard.next());
-		if(parsedWords.get(0).equals("exit/")){
+		parsedWords.add(keyboard.next().toUpperCase());
+		if (parsedWords.get(0).equals("/QUIT")) {
 			System.exit(0);
+		} else {
+			start = parsedWords.get(0);
 		}
-		parsedWords.add(keyboard.next());
-		if(parsedWords.get(1).equals("exit/")){
+		parsedWords.add(keyboard.next().toUpperCase());
+		if (parsedWords.get(1).equals("/QUIT")) {
 			System.exit(0);
+		} else {
+			end = parsedWords.get(1);
 		}
 		return parsedWords;
 	}
 
-	public static ArrayList<String> getWordLadderDFS(String start, String end) {
-		// Returned list should be ordered start to end.  Include start and end.
-		// Return empty list if no ladder.
-		
+	/**
+	 * Returned list should be ordered start to end. Include start and end.
+	 * Return empty list if no ladder.
+	 * 
+	 * @param start
+	 * @param end
+	 * @return
+	 */
+	public static ArrayList<String> getWordLadderDFS(String start, String end) throws StackOverflowError {
+
 		boolean gotIt = false;
-		
-		// TODO some code
-		Set<String> dict = makeDictionary();
-		// TODO more code
-		
-		ArrayList<String> wordL = new ArrayList<String>();		
-		Set<String> hs = new HashSet<String>();
-		
-		hs.add(start);
-		wordL.add(start);
-		
-		gotIt = recursDFS(dict, hs, wordL, start, end);
-		
-		if (gotIt){ return wordL; }
-		
+
+		Set<String> dict;
+
+		ArrayList<String> wordL;
+		Set<String> hs;
+
+		try {
+			dict = makeDictionary();
+			wordL = new ArrayList<String>();
+			hs = new HashSet<String>();
+			hs.add(start);
+			wordL.add(start);
+
+			gotIt = recursDFS(dict, hs, wordL, start, end);
+		} catch (StackOverflowError e) {
+			//if there is a stack overflow attempt to find list form the other direction
+			dict = makeDictionary();
+			wordL = new ArrayList<String>();
+			hs = new HashSet<String>();
+			hs.add(end);
+			wordL.add(end);
+
+			gotIt = recursDFS(dict, hs, wordL, end, start);
+			Collections.reverse(wordL);
+		}
+
+		if (gotIt) {
+			return wordL;
+		}
 		else {
-		return null; // replace this line later with real return
+			return new ArrayList<String>(); 
 		}
 	}
-	
-    public static ArrayList<String> getWordLadderBFS(String start, String end) {
-		
+
+	public static ArrayList<String> getWordLadderBFS(String start, String end) {
+
 		Set<String> dict = makeDictionary();
 		Queue<Node> queue = new LinkedList<Node>();
 		Node prevNode = new Node(start, null);
@@ -139,95 +169,87 @@ public class Main {
 	}
 
 	public static void printLadder(ArrayList<String> ladder) {
-		
-		String start = ladder.get(0);
-		String end = ladder.get(1);
-		int n = ladder.size() - 2;
-		
-		if(ladder.isEmpty()){
-		
-			System.out.println("no word ladder can be found between " 
-			+ start + " and " + end + ".");
+
+		if (ladder.isEmpty()) {
+
+			System.out.println("no word ladder can be found between " + start + " and " + end + ".");
 		}
-		
-		else { 
-			
-			System.out.println("a " + n + "-rung word ladder exists between "
-					+ start + " and " + end + ".");
-		
-			for (int i = 0; i < ladder.size(); i++){
+
+		else {
+
+			System.out.println(
+					"a " + (ladder.size() - 2) + "-rung word ladder exists between " + start + " and " + end + ".");
+
+			for (int i = 0; i < ladder.size(); i++) {
 				System.out.println(ladder.get(i) + "\n");
 			}
 		}
 	}
-	// TODO
-	// Other private static methods here
-	
-	private static boolean recursDFS(Set<String> dict, Set<String> hs,	
-			ArrayList<String> wordL, String start, String end) {
+
+	private static boolean recursDFS(Set<String> dict, Set<String> hs, ArrayList<String> wordL, String start,
+			String end) {
 
 		boolean flag = false;
-		
+
 		int count = 0;
-		int i,j,k = 0;
 		int curr = 0;
-		
+
 		String temp = start;
 		String[] startTemp = start.split("");
 		String[] endTemp = end.split("");
-		
-		if (start.equals(end)){
+
+		if (start.equals(end)) {
 			return true;
-		}		
-		
-		for (i = 0; i < end.length(); i++){
-			
-			if ((startTemp[i]).equals(endTemp[i])){
+		}
+
+		for (int i = 0; i < end.length(); i++) {
+
+			if ((startTemp[i]).equals(endTemp[i])) {
 				curr = i + 1;
-				
-				if (curr >= end.length()){
+
+				if (curr >= end.length()) {
 					curr = 0;
 					break;
 				}
 			}
 		}
-		
-		while (count != start.length() - 1){
-			
-			for (j = 'a'; j < 'z'; j++){
+
+		while (count != start.length() - 1) {
+
+			for (int j = 'A'; j < 'Z'; j++) {
 				String s = "";
-				char tempChar = ((char)j);
+				char tempChar = ((char) j);
 				startTemp[curr] = String.valueOf(tempChar);
-				
-				for (k = 0; k < startTemp.length; k++) {
+
+				for (int k = 0; k < startTemp.length; k++) {
 					s += startTemp[k];
 				}
 				start = s;
-				
-				if (dict.contains(start.toUpperCase()) && !hs.contains(start)){
+
+				if (dict.contains(start.toUpperCase()) && !hs.contains(start)) {
 					hs.add(start);
 					wordL.add(start);
+					dict.remove(start);
 					flag = recursDFS(dict, hs, wordL, start, end);
-					
-					if (flag){
+
+					if (flag) {
 						return true;
 					}
 					wordL.remove(start);
 					break;
-				}	
+				}
 				hs.add(start);
 			}
 			start = temp.toString();
 			startTemp = start.split("");
-			if (curr != start.length() - 1){
+			if (curr != start.length() - 1) {
 				curr++;
-			} 
-			else {
+			} else {
 				curr = 0;
 			}
-		count++;
+			count++;
 		}
-		
+
 		return false;
 	}
 }
