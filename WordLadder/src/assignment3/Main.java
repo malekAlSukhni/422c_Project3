@@ -3,11 +3,11 @@
  * Tiraj Parikh
  * trp589
  * 16460
- * <Student2 Name>
- * <Student2 EID>
- * <Student2 5-digit Unique No.>
+ * Malek Al Sukhni
+ * mha664
+ * 16470
  * Slip days used: <0>
- * Git URL:
+ * https://github.com/malekAlSukhni/422c_Project3.git
  * Fall 2016
  */
 
@@ -44,6 +44,8 @@ public class Main {
 		printLadder(getWordLadderDFS(boom.get(0), boom.get(1)));
 		boom = parse(kb);
 		printLadder(getWordLadderBFS(boom.get(0), boom.get(1)));
+		System.out.println("DFS");
+		printLadder(getWordLadderDFS(boom.get(0), boom.get(1)));
 	}
 
 	public static void initialize() {
@@ -102,7 +104,8 @@ public class Main {
 
 			gotIt = recursDFS(dict, hs, wordL, start, end);
 		} catch (StackOverflowError e) {
-			//if there is a stack overflow attempt to find list form the other direction
+			// if there is a stack overflow attempt to find list form the other
+			// direction
 			dict = makeDictionary();
 			wordL = new ArrayList<String>();
 			hs = new HashSet<String>();
@@ -112,12 +115,15 @@ public class Main {
 			gotIt = recursDFS(dict, hs, wordL, end, start);
 			Collections.reverse(wordL);
 		}
+		
+		if(wordL.size() > 3){
+			wordL = optomizeList(wordL);
+		}
 
 		if (gotIt) {
 			return wordL;
-		}
-		else {
-			return new ArrayList<String>(); 
+		} else {
+			return new ArrayList<String>();
 		}
 	}
 
@@ -249,7 +255,32 @@ public class Main {
 			}
 			count++;
 		}
-
 		return false;
+	}
+
+	private static ArrayList<String> optomizeList(ArrayList<String> arrayList) {
+		ArrayList<String> optomizedList = new ArrayList<String>();
+		int diffIndex = findDiffIndex(arrayList.get(0), arrayList.get(1));
+		optomizedList.add(arrayList.get(0));
+		for(int index = 0; index < arrayList.size() - 2; index++){
+			int indexToCheck = findDiffIndex(arrayList.get(index), arrayList.get(index + 1));
+			if(diffIndex != indexToCheck){
+				optomizedList.add(arrayList.get(index));
+				diffIndex = indexToCheck;
+			}
+		}
+		
+		optomizedList.add(arrayList.get(arrayList.size() - 1));
+		return optomizedList;
+
+	}
+	
+	private static int findDiffIndex(String s1, String s2){
+		for(int index = 0; index < s1.length(); index++){
+			if(s1.charAt(index) != s2.charAt(index)){
+				return index;
+			}
+		}
+		return -1;
 	}
 }
