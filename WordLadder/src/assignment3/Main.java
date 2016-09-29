@@ -36,6 +36,8 @@ public class Main {
 			ps = System.out; // default to Stdout
 		}
 		initialize();
+		ArrayList<String> k = parse(kb);
+		printLadder(getWordLadderBFS(k.get(0), k.get(1)));
 
 		// TODO methods to read in words, output ladder
 	}
@@ -55,13 +57,14 @@ public class Main {
 	public static ArrayList<String> parse(Scanner keyboard) {
 		ArrayList<String> parsedWords = new ArrayList<String>(2);
 		parsedWords.add(keyboard.next());
-		if(parsedWords.get(0).equals("exit/")){
+		if (parsedWords.get(0).equals("exit/")) {
 			System.exit(0);
 		}
 		parsedWords.add(keyboard.next());
-		if(parsedWords.get(1).equals("exit/")){
+		if (parsedWords.get(1).equals("exit/")) {
 			System.exit(0);
 		}
+		return parsedWords;
 	}
 
 	public static ArrayList<String> getWordLadderDFS(String start, String end) {
@@ -76,12 +79,33 @@ public class Main {
 	}
 
 	public static ArrayList<String> getWordLadderBFS(String start, String end) {
-
-		// TODO some code
 		Set<String> dict = makeDictionary();
-		// TODO more code
+		Queue<Node> queue = new LinkedList<Node>();
+		Node prevNode = new Node(start, null);
+		queue.add(prevNode);
+		dict.remove(start);
+		while (!queue.isEmpty()) {
+			prevNode = queue.remove();
+			StringBuilder current = new StringBuilder(prevNode.word);
+			if (current.toString().equals(end)) {
+				return prevNode.createNodeList();
+			}
+			for (int placeToChange = 0; placeToChange < start.length(); placeToChange++) {
+				char letter = current.charAt(placeToChange);
+				for (char alphabet = 'A'; alphabet <= 'Z'; alphabet++) {
+					current.setCharAt(placeToChange, alphabet);
+					if (dict.contains(current.toString())) {
+						Node currNode = new Node(current.toString(), prevNode);
+						queue.add(currNode);
+						dict.remove(current.toString());
+					}
 
-		return null; // replace this line later with real return
+				}
+				current.setCharAt(placeToChange, letter);
+			}
+		}
+
+		return new ArrayList<String>(); // return no ladder
 	}
 
 	public static Set<String> makeDictionary() {
