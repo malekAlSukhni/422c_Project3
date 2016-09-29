@@ -82,19 +82,20 @@ public class Main {
 	 * Returned list should be ordered start to end. Include start and end.
 	 * Return empty list if no ladder.
 	 * 
-	 * @param start
-	 * @param end
-	 * @return
+	 * @param start is first word entered by user 
+	 * @param end is second word input by user 
+	 * @return ladder if full or empty
 	 */
 	public static ArrayList<String> getWordLadderDFS(String start, String end) throws StackOverflowError {
-
+		// initialize variables
 		boolean gotIt = false;
 
 		Set<String> dict;
 
 		ArrayList<String> wordL;
 		Set<String> hs;
-
+		
+		//error handling 
 		try {
 			dict = makeDictionary();
 			wordL = new ArrayList<String>();
@@ -116,6 +117,7 @@ public class Main {
 			Collections.reverse(wordL);
 		}
 		
+		//optimizing for error handling
 		if(wordL.size() > 3){
 			wordL = optomizeList(wordL);
 		}
@@ -173,14 +175,17 @@ public class Main {
 		}
 		return words;
 	}
-
+	/**
+	 * prints out ladder if properly made, if not print error message
+	 * @param ladder is word ladder
+	 */
 	public static void printLadder(ArrayList<String> ladder) {
-
+		//print message for no ladder found
 		if (ladder.isEmpty()) {
 
 			System.out.println("no word ladder can be found between " + start + " and " + end + ".");
 		}
-
+		//print out ladder and size
 		else {
 
 			System.out.println(
@@ -191,10 +196,18 @@ public class Main {
 			}
 		}
 	}
-
+	/**
+	 * recursively creates word ladder
+	 * @param dict is set made by words in dictionary
+	 * @param hs is set of hash values
+	 * @param wordL is the word ladder
+	 * @param start is the first word of the ladder
+	 * @param end is the last word of the ladder
+	 * @return true if word ladder has been completed, false if not completed 
+	 */
 	private static boolean recursDFS(Set<String> dict, Set<String> hs, ArrayList<String> wordL, String start,
 			String end) {
-
+		//initialize variables
 		boolean flag = false;
 
 		int count = 0;
@@ -203,11 +216,13 @@ public class Main {
 		String temp = start;
 		String[] startTemp = start.split("");
 		String[] endTemp = end.split("");
-
+		
+		//edge case
 		if (start.equals(end)) {
 			return true;
 		}
-
+		
+		// loop through first and last word and set curr to index of same letter
 		for (int i = 0; i < end.length(); i++) {
 
 			if ((startTemp[i]).equals(endTemp[i])) {
@@ -219,19 +234,19 @@ public class Main {
 				}
 			}
 		}
-
+		//loop until count reaches length of first word
 		while (count != start.length() - 1) {
-
+			//add each letter to temp variable to test
 			for (int j = 'A'; j <= 'Z'; j++) {
 				String s = "";
 				char tempChar = ((char) j);
 				startTemp[curr] = String.valueOf(tempChar);
-
+				//change start to each individual combination of letters
 				for (int k = 0; k < startTemp.length; k++) {
 					s += startTemp[k];
 				}
 				start = s;
-
+				//recursively complete DFS after comparing to dicitonary
 				if (dict.contains(start.toUpperCase()) && !hs.contains(start)) {
 					hs.add(start);
 					wordL.add(start);
@@ -246,6 +261,7 @@ public class Main {
 				}
 				hs.add(start);
 			}
+			//iterate through start
 			start = temp.toString();
 			startTemp = start.split("");
 			if (curr != start.length() - 1) {
