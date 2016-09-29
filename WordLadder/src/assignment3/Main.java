@@ -37,7 +37,7 @@ public class Main {
 		}
 		initialize();
 		ArrayList<String> k = parse(kb);
-		getWordLadderBFS(k.get(0), k.get(1));
+		printLadder(getWordLadderBFS(k.get(0), k.get(1)));
 
 		// TODO methods to read in words, output ladder
 	}
@@ -79,31 +79,33 @@ public class Main {
 	}
 
 	public static ArrayList<String> getWordLadderBFS(String start, String end) {
-		ArrayList<String> LOL = new ArrayList<String>();
 		Set<String> dict = makeDictionary();
-		Queue<String> queue = new LinkedList<String>();
-		queue.add(start);
+		Queue<Node> queue = new LinkedList<Node>();
+		Node prevNode = new Node(start, null);
+		queue.add(prevNode);
 		dict.remove(start);
-		while (!queue.isEmpty()) {	
-			StringBuilder current = new StringBuilder(queue.remove());
-			if(current.toString().equals(end)){
-				//return ladder
+		while (!queue.isEmpty()) {
+			prevNode = queue.remove();
+			StringBuilder current = new StringBuilder(prevNode.word);
+			if (current.toString().equals(end)) {
+				return prevNode.createNodeList();
 			}
 			for (int placeToChange = 0; placeToChange < start.length(); placeToChange++) {
 				char letter = current.charAt(placeToChange);
 				for (char alphabet = 'A'; alphabet <= 'Z'; alphabet++) {
 					current.setCharAt(placeToChange, alphabet);
-					if(dict.contains(current.toString())){
-						queue.add(new String(current.toString()));
+					if (dict.contains(current.toString())) {
+						Node currNode = new Node(current.toString(), prevNode);
+						queue.add(currNode);
 						dict.remove(current.toString());
 					}
-					
+
 				}
 				current.setCharAt(placeToChange, letter);
 			}
 		}
 
-		return null; // return no ladder
+		return new ArrayList<String>(); // return no ladder
 	}
 
 	public static Set<String> makeDictionary() {
