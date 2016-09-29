@@ -222,7 +222,7 @@ public class Main {
 
 		while (count != start.length() - 1) {
 
-			for (int j = 'A'; j < 'Z'; j++) {
+			for (int j = 'A'; j <= 'Z'; j++) {
 				String s = "";
 				char tempChar = ((char) j);
 				startTemp[curr] = String.valueOf(tempChar);
