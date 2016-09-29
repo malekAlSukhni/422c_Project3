@@ -192,7 +192,7 @@ public class Main {
 			}
 		}
 		
-		while (count != 4){
+		while (count != start.length() - 1){
 			
 			for (j = 'a'; j < 'z'; j++){
 				String s = "";
@@ -219,7 +219,7 @@ public class Main {
 			}
 			start = temp.toString();
 			startTemp = start.split("");
-			if (curr != 4){
+			if (curr != start.length() - 1){
 				curr++;
 			} 
 			else {
