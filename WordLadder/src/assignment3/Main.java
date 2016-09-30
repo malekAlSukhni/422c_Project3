@@ -119,11 +119,12 @@ public class Main {
 				gotIt = recursDFS(dict, hs, wordL, end, start);
 				Collections.reverse(wordL);
 			}
-
+			/*We tried to optimize but it didn't work for all cases :(
 			// if list size less than 3 no need to optimize
 			if (wordL.size() > 3) {
 				wordL = optimizeList(wordL);
 			}
+			*/
 
 			if (gotIt) {
 				return wordL;
