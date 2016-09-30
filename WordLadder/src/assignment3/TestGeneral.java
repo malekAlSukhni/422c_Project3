@@ -17,7 +17,7 @@ public class TestGeneral {
 	@Test
 	public void testIfDifSizeBFS() {
 
-		assertEquals(Collections.EMPTY_LIST, Main.getWordLadderBFS("SMART", ""));
+		assertEquals(Collections.EMPTY_LIST, Main.getWordLadderBFS("SMART", "CENA"));
 	}
 
 	@Test
