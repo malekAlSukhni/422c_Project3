@@ -120,9 +120,9 @@ public class Main {
 				Collections.reverse(wordL);
 			}
 
-			// optimizing for error handling
+			// if list size less than 3 no need to optimize
 			if (wordL.size() > 3) {
-				wordL = optomizeList(wordL);
+				wordL = optimizeList(wordL);
 			}
 
 			if (gotIt) {
@@ -132,6 +132,15 @@ public class Main {
 		return new ArrayList<String>();
 	}
 
+	/**
+	 * Finds a word ladder using BFS
+	 * 
+	 * @param start
+	 *            starting word
+	 * @param end
+	 *            ending word
+	 * @return a word ladder
+	 */
 	public static ArrayList<String> getWordLadderBFS(String start, String end) {
 
 		Set<String> dict = makeDictionary();
@@ -139,12 +148,16 @@ public class Main {
 		Node prevNode = new Node(start, null);
 		queue.add(prevNode);
 		dict.remove(start);
+		// while the queue isn't empty keep going
 		while (!queue.isEmpty()) {
 			prevNode = queue.remove();
 			StringBuilder current = new StringBuilder(prevNode.word);
+			// did you reach the end, if so return the associated ladder
 			if (current.toString().equals(end)) {
 				return prevNode.createNodeList();
 			}
+			// find all permutations and add them to the queue if theyre in the
+			// dictionary
 			for (int placeToChange = 0; placeToChange < start.length(); placeToChange++) {
 				char letter = current.charAt(placeToChange);
 				for (char alphabet = 'A'; alphabet <= 'Z'; alphabet++) {
@@ -152,6 +165,8 @@ public class Main {
 					if (dict.contains(current.toString())) {
 						Node currNode = new Node(current.toString(), prevNode);
 						queue.add(currNode);
+						// remove word from dictionary to avoid duplicate values
+						// in queue
 						dict.remove(current.toString());
 					}
 
@@ -287,7 +302,14 @@ public class Main {
 		return false;
 	}
 
-	private static ArrayList<String> optomizeList(ArrayList<String> arrayList) {
+	/**
+	 * optimizes list, gets rid of words with the same increment as the previous
+	 * 
+	 * @param arrayList
+	 *            list to optimize
+	 * @return optimized list
+	 */
+	private static ArrayList<String> optimizeList(ArrayList<String> arrayList) {
 		ArrayList<String> optomizedList = new ArrayList<String>();
 		int diffIndex = findDiffIndex(arrayList.get(0), arrayList.get(1));
 		optomizedList.add(arrayList.get(0));
@@ -304,6 +326,15 @@ public class Main {
 
 	}
 
+	/**
+	 * finds the letter thats the difference between two index's
+	 * 
+	 * @param s1
+	 *            string to check
+	 * @param s2
+	 *            string to check
+	 * @return index thats different
+	 */
 	private static int findDiffIndex(String s1, String s2) {
 		for (int index = 0; index < s1.length(); index++) {
 			if (s1.charAt(index) != s2.charAt(index)) {
